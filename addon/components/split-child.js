@@ -1,24 +1,24 @@
-import Ember from 'ember';
+import { computed, observer } from '@ember/object';
+import Component from '@ember/component';
+import { next , schedule, scheduleOnce } from '@ember/runloop';
+
 import splitChildLayout from 'ember-split-view/templates/components/split-child';
 
-const { computed, observer } = Ember;
-
-export default Ember.Component.extend({
+export default Component.extend({
   layout: splitChildLayout,
   classNames: ['split-view-child'],
   classNameBindings: [
-    'parent.isDragging:dragging',
-    'parent.isVertical:vertical:horizontal',
-    'childSplitView:nested',
+    'parent.isDragging:dragging'    
   ],
 
   childSplitView: null,
   anchorSide: null,
+  isOptional: false,
 
   init() {
     this._super();
 
-    Ember.run.schedule('afterRender', this, () => {
+    schedule('afterRender', this, () => {
       this.set('register-as', this); // register-as is a new property
     });
   },
@@ -27,7 +27,7 @@ export default Ember.Component.extend({
     const parent = this.get('parent');
 
     // run next to avoid changing the component during a render iteration
-    Ember.run.next(this, () => {
+    next(this, () => {
       if (parent && parent.addSplit) {
         parent.addSplit(this);
       }
@@ -112,7 +112,7 @@ export default Ember.Component.extend({
   updateChildSplitView: observer('childSplitView', 'anchorOffset', 'parent.width', 'parent.height',
     function () {
       // must run afterRender so that the size has updated
-      Ember.run.scheduleOnce('afterRender', this, () => {
+      scheduleOnce('afterRender', this, () => {
         const childSplitView = this.get('childSplitView');
 
         const element = this.$();
@@ -175,5 +175,15 @@ export default Ember.Component.extend({
       return this.minSizeHorizontal();
     }
   ),
+  actions:{
+    close(){
+      const style = this.get('element').style;
+      style.display = 'none';
+    },
+    open(){
+      const style = this.get('element').style;
+      style.display = 'block';
+    }
+  }
 
 });

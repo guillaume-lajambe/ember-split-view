@@ -1,11 +1,11 @@
 <div class="demo-tab">
-  {{#split-view isVertical=true  class="splitViewVertical" as |split|}}
-    {{#split.child class="border"}}
+  {{#ember-split-view isVertical=true  class="splitViewVertical" as |split|}}
+    {{#split.child as | child |}}
+
       {{partial "ring"}}
     {{/split.child}}
-    {{split.sash}}
-    {{#split.child class="border"}}
+    {{#split.child }}
       {{partial "yoda"}}
     {{/split.child}}
-  {{/split-view}}
+  {{/ember-split-view}}
 </div>

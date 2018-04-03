@@ -1,0 +1,51 @@
+.btn-close {
+  position: relative;
+  float: right;
+}
+
+.ember-split-view{
+  display: flex;
+
+  &.vertical{
+    flex-direction: row;
+
+    & .split-view-child{
+      flex-direction: row;
+    }
+  }
+  &.horizontal{
+    flex-direction: column;
+
+    & .split-view-child{
+      flex-direction: column;
+    }
+  }
+
+  & .split-view-child {
+    display: flex;
+
+    & .split-child-container{
+      border: solid;
+      border-width: 1px;
+      border-radius: 10px;
+      padding: .75rem;
+      width: auto;
+      height: auto;
+
+      & .btn-close{
+        border: 1px solid black;
+        padding: .15rem .3rem;
+        cursor: pointer;
+      }
+    }
+  }
+
+  & .ember-split-view-splitter{
+    cursor: e-resize;
+    width: 10px;
+
+    &:hover{
+      background-color: lightgray;
+    }
+  }
+}

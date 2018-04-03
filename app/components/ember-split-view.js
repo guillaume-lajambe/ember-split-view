@@ -1,0 +1,1 @@
+export { default } from 'ember-split-view/components/ember-split-view';

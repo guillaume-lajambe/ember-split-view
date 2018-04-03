@@ -1,1 +1,7 @@
-{{yield}}
+<div class="split-child-container">
+  {{yield (hash btn-close=(component 'btn-close' closeAction=(action 'close')))}}
+</div>
+{{#if true}}
+  <div class="ember-split-splitter">
+  </div>
+{{/if}}

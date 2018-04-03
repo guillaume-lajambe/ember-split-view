@@ -1,4 +1,5 @@
 @import "ember-paper";
+@import "ember-split-view";
 
 /* Put your CSS here */
 html, body {
@@ -38,29 +39,6 @@ body > .ember-view {
   padding: 25px;
   text-align: center;
   flex: 1;
-}
-
-.splitViewVertical {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
-
-.splitViewHorizontal {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
-
-.split-view-child {
-  padding: 10px;
-  overflow: hidden;
-  min-width: 100px;
-  min-height: 100px;
 }
 
 .border {

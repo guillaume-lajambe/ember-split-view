@@ -1,11 +1,12 @@
 /* eslint max-len: 0 */
 /* eslint new-cap: ["error", { "capIsNew": false }]*/
-import Ember from 'ember';
+import Component from '@ember/component';
+import { A } from '@ember/array';
+import { next, scheduleOnce } from '@ember/runloop';
+import { observer, computed } from '@ember/object';
+
 import SplitChild from './split-child';
 import splitViewLayout from 'ember-split-view/templates/components/split-view';
-
-const { computed, observer } = Ember;
-
 
 /**
  * This class represents a view that is split either vertically or horizontally.
@@ -20,7 +21,7 @@ const { computed, observer } = Ember;
  *   {{#split-child}}
  *     Content of the left view here.
  *   {{/split-child}}
- *   {{split-sash"}}
+
  *   {{#split-child}}
  *     Content of the right view here.
  *   {{/split-child}}
@@ -34,7 +35,7 @@ const { computed, observer } = Ember;
  *   {{#split-child}}
  *     Content of the top view here.
  *   {{/split-child}}
- *   {{split-sash"}}
+
  *   {{#split-child}}
  *     Content of the bottom view here.
  *   {{/split-child}}
@@ -44,7 +45,7 @@ const { computed, observer } = Ember;
  * @cLass SplitViewComponent
  * @extends Ember.Component
  */
-export default Ember.Component.extend({
+export default Component.extend({
   layout: splitViewLayout,
   /**
    * @property {boolean} isVertical - the orientation of the split: true = vertical, false = horizontal
@@ -61,12 +62,12 @@ export default Ember.Component.extend({
   splits: null,
   isDragging: false,
   isRoot: false,
-  classNames: ['split-view'],
+  classNames: ['ember-split-view'],
   classNameBindings: ['isDragging:dragging', 'isVertical:vertical:horizontal'],
 
   init() {
     this._super();
-    this.set('splits', Ember.A());
+    this.set('splits', A());
   },
 
   didInsertElement(...args) {
@@ -76,7 +77,7 @@ export default Ember.Component.extend({
     const isRoot = !(parentView instanceof SplitChild);
 
     // run next to avoid changing the component during a render iteration
-    Ember.run.next(this, () => {
+    next(this, () => {
       this.set('isRoot', isRoot);
       const resizeService = this.get('resizeService');
 
@@ -92,10 +93,10 @@ export default Ember.Component.extend({
           resizeService.on('didResize', this, this.didResize);
         }
       }
-      Ember.run.next(this, () => {
+      next(this, () => {
         this._setStyle();
       });
-      Ember.run.scheduleOnce('afterRender', this, () => {
+      scheduleOnce('afterRender', this, () => {
         // must do this in afterRender so that the parent has calculated its width and height
         const element = this.$();
         this.set('width', element.width());

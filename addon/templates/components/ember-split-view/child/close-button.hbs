@@ -1,0 +1,5 @@
+{{#if hasBlock}}
+  {{yield (action closeAction)}}
+{{else}}
+  <span class="btn-close" {{action closeAction}}>X</span>
+{{/if}}
