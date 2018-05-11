@@ -65,7 +65,7 @@ export default Component.extend({
       let nextChildSizeModification = 0;
       childList.forEach(child => {
         if (child.isDragging) {
-          let elementSize = (this.get('isVertical') ? event.clientX : event.clientY) - offset;
+          let elementSize = (this.get('isVertical') ? event.pageX : event.pageY) - offset;
           if ((!child.maxSize || elementSize < child.maxSize) && (!child.minSize || elementSize > child.minSize)){
             nextChildSizeModification = child.size - elementSize;
             child.resize(elementSize);
