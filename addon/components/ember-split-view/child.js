@@ -1,8 +1,8 @@
-import { computed, observer } from '@ember/object';
+import { computed } from '@ember/object';
 import Component from '@ember/component';
-import { next , scheduleOnce } from '@ember/runloop';
 import { alias } from '@ember/object/computed';
 import EmberObject from '@ember/object';
+import { htmlSafe } from '@ember/string';
 
 import layout from '../../templates/components/ember-split-view/child';
 
@@ -13,21 +13,37 @@ export default Component.extend({
     'hidden'
   ],
 
-  childSplitView: null,
-  anchorSide: null,
+  attributeBindings:['style'],
+
 
   isDragging: false,
   isOptional: false,
 
+  isNotLast: true,
 
+  minSize: 60,
+  startingSize: null,
+  maxSize: 250,
+
+  style: computed('currentChildInformation.size', 'isVertical', function(){
+    if (this.get('isVertical')){
+      return htmlSafe(`width:${this.get('currentChildInformation.size')}px!important`);
+    }
+
+    return htmlSafe(`height:${this.get('currentChildInformation.size')}px!important`);
+  }),
 
   currentChildInformation: computed(function(){
+    const childList= this.get('childList');
     return EmberObject.create({
       identifier:this.get('identifier') || this.uuidv4(),
       hidden:false,
-      index: this.get('childList.length'),
+      index: childList.length,
       size: 'auto',
-      resize: (size) => this._setSize(size)
+      isDragging: false,
+      maxSize: this.get('maxSize'),
+      minSize: this.get('minSize'),
+      resize: (size, modification) => this._setSize(size, modification)
     });
   }),
 
@@ -45,54 +61,58 @@ export default Component.extend({
     });
   },
 
+  didInsertElement() {
+    this._super(...arguments);
 
-  willDestroyElement() {
-    this.get('removeChild')(this.get('currentChildInformation.identifier'));
+    let size = this.get('isVertical') ? this.$().width() : this.$().height();
+    let minSize = this.get('minSize') || size;
+    let maxSize = this.get('maxSize') || size;
+    if (size >= minSize && size <= maxSize){
+      this.set('currentChildInformation.size', size);
+    }
+    else if (size > maxSize){
+      this.set('currentChildInformation.size', maxSize);
+    }
+    else {
+      this.set('currentChildInformation.size', minSize);
+    }
+
+    const childList = this.get('childList');
+    this.set('isNotLast', childList.indexOf(this.get('currentChildInformation')) !== childList.length - 1);
   },
 
 
-  _setSize(modification){
-    let size;
-    if(this.get('isVertical')){
-      size = this.$().width() + modification;
-      this.$().width(size);
-    }else{
-      size = this.$().height() + modification;
-      this.$().height(size);
-    }
+  _setSize(size, modification){
+    let minSize = this.get('minSize');
+    if (size){
+      if (size < minSize)
+        size = minSize;
 
-    this.set('currentChildInformation.size', size);
+      let maxSize = this.get('maxSize');
+      if (maxSize && size > maxSize)
+        size = maxSize;
+
+      this.set('currentChildInformation.size', size);
+    }else if (modification){
+      let modifiedSize = this.get('currentChildInformation.size') + modification;
+
+      if (modifiedSize < minSize)
+        modifiedSize = minSize;
+
+      let maxSize = this.get('maxSize');
+      if (maxSize && modifiedSize > maxSize)
+        modifiedSize = maxSize;
+
+      this.set('currentChildInformation.size', modifiedSize);
+    }
   },
 
   actions:{
     close(){
-      const style = this.get('element').style;
-      style.display = 'none';
+      this.get('closeAction')(this.get('currentChildInformation.identifier'));
     },
     startDrag(){
-      this.set('isDragging', true);
-    },
-    mouseMove(event){
-
-      if(this.get('isDragging')){
-        let modification = 0;
-        let currentSize = 0;
-        if(this.get('isVertical')){
-          modification = event.pageX;
-          currentSize = this.$().width();
-        } else{
-          modification = event.movementY;
-          currentSize = this.$().height();
-        }
-
-        console.log(event);
-
-        this.get('resize')(this.get('currentChildInformation.identifier'), modification, currentSize);
-      }
-    },
-    endDrag(){
-      this.set('isDragging', false);
+      this.set('currentChildInformation.isDragging', true);
     }
   }
-
 });

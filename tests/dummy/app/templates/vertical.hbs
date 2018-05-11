@@ -1,11 +1,22 @@
 <div class="demo-tab">
-  {{#ember-split-view isVertical=true  class="splitViewVertical" as |split|}}
-    {{#split.child as | child |}}
-
+  {{#ember-split-view isVertical=true class="splitViewVertical" as |split openAction|}}
+    {{#split.child identifier="first" maxSize=1000 minSize=130 as |child|}}
+      {{child.close-button}}
       {{partial "ring"}}
+      <button type="button" name="button" {{action openAction 'second'}}> Open Second</button>
+      <button type="button" name="button" {{action openAction 'third'}}> Open Third</button>
     {{/split.child}}
-    {{#split.child }}
+    {{#split.child identifier="second" maxSize=1000 minSize=130 as |child|}}
+      {{child.close-button}}
       {{partial "yoda"}}
+      <button type="button" name="button" {{action openAction 'first'}}> Open First</button>
+      <button type="button" name="button" {{action openAction 'third'}}> Open Third</button>
+    {{/split.child}}
+    {{#split.child identifier="third" maxSize=1000 minSize=130 as |child|}}
+      {{child.close-button}}
+      {{partial "yoda"}}
+      <button type="button" name="button" {{action openAction 'first'}}> Open First</button>
+      <button type="button" name="button" {{action openAction 'second'}}> Open Second</button>
     {{/split.child}}
   {{/ember-split-view}}
 </div>

@@ -1,1 +1,6 @@
-{{yield (hash child=(component 'ember-split-view/child' isVertical=isVertical initAction=(action 'initChild') resize=(action 'resize') childList=_childList) ) }}
+{{yield
+  (hash
+    child=(component 'ember-split-view/child' isVertical=isVertical initAction=(action 'initChild') closeAction=(action 'closeChild') childList=_childList)
+  )
+  (action 'openChild')
+}}
